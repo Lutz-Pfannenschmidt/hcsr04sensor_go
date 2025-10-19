@@ -1,4 +1,4 @@
-module hcsr04
+module github.com/Lutz-Pfannenschmidt/hcsr04sensor_go
 
 go 1.25.1
 
