@@ -43,8 +43,7 @@ func main() {
 	trigPin := rpio.Pin(23)
 	echoPin := rpio.Pin(24)
 
-	// !!! DO NOT USE !!!
-	// if you have multiple sensors or other gpio in your program,
+	// Do not use if you have multiple sensors or other gpio in your program,
 	// call rpio.Open() once in your main program instead of in InitPins.
 	// and initialize the pins manually.
 	hcsr04.InitPins(trigPin, echoPin)
