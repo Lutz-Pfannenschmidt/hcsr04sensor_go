@@ -9,6 +9,15 @@ import (
 	"github.com/stianeikeland/go-rpio/v4"
 )
 
+type Toggleable interface {
+	High()
+	Low()
+}
+
+type Readable interface {
+	Read() uint8
+}
+
 // InitPins initializes the trigger and echo pins for the HC-SR04 sensor.
 // If using more than one sensor, consider calling rpio.Open() and setting the pins up once in your main program instead.
 func InitPins(trig, echo rpio.Pin) error {
@@ -29,7 +38,7 @@ func ClosePins() {
 
 // Measure measures the distance using the HC-SR04 sensor.
 // It returns the median distance in mm based on the specified number of samples.
-func Measure(trig, echo rpio.Pin, temperatureC float64, samples int, wait time.Duration) (int, error) {
+func Measure(trig Toggleable, echo Readable, temperatureC float64, samples int, wait time.Duration) (int, error) {
 	speedOfSound := 331.3 * math.Sqrt(1+(temperatureC/273.15)) // m/s
 
 	var readings []int
@@ -44,14 +53,14 @@ func Measure(trig, echo rpio.Pin, temperatureC float64, samples int, wait time.D
 		start := time.Now()
 		timeout := start.Add(1 * time.Second)
 
-		for echo.Read() == rpio.Low {
+		for echo.Read() == 0 {
 			if time.Now().After(timeout) {
 				return 0, fmt.Errorf("echo pulse start timeout")
 			}
 		}
 		signalStart := time.Now()
 
-		for echo.Read() == rpio.High {
+		for echo.Read() == 1 {
 			if time.Now().After(timeout) {
 				return 0, fmt.Errorf("echo pulse end timeout")
 			}
